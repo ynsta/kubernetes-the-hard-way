@@ -10,7 +10,7 @@ In this lab you will create a route for each worker node that maps the node's Po
 
 In this section you will gather the information required to create routes in the `kubernetes-the-hard-way` VPC network.
 
-Print the internal IP address and Pod CIDR range for each worker instance:
+Get internal IP address and Pod CIDR range for each worker instance and create services:
 
 ```bash
 {
@@ -19,26 +19,66 @@ Print the internal IP address and Pod CIDR range for each worker instance:
   NODE_0_SUBNET=$(grep node-0 machines.txt | cut -d " " -f 4)
   NODE_1_IP=$(grep node-1 machines.txt | cut -d " " -f 1)
   NODE_1_SUBNET=$(grep node-1 machines.txt | cut -d " " -f 4)
+
+  cat <<EOF | tee server-kubernetes-routes.service
+[Unit]
+Description=Kubernetes Pod Network Routes
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/ip route replace ${NODE_0_SUBNET} via ${NODE_0_IP}
+ExecStart=/sbin/ip route replace ${NODE_1_SUBNET} via ${NODE_1_IP}
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+  cat <<EOF | tee node-0-kubernetes-routes.service
+[Unit]
+Description=Kubernetes Pod Network Routes
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/ip route replace ${NODE_1_SUBNET} via ${NODE_1_IP}
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+  cat <<EOF | tee node-1-kubernetes-routes.service
+[Unit]
+Description=Kubernetes Pod Network Routes
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/ip route replace ${NODE_0_SUBNET} via ${NODE_0_IP}
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
 }
 ```
 
-```bash
-ssh root@server <<EOF
-  ip route add ${NODE_0_SUBNET} via ${NODE_0_IP}
-  ip route add ${NODE_1_SUBNET} via ${NODE_1_IP}
-EOF
-```
+Copy and enable services:
 
 ```bash
-ssh root@node-0 <<EOF
-  ip route add ${NODE_1_SUBNET} via ${NODE_1_IP}
-EOF
-```
+{
+  for i in server node-0 node-1; do
+    scp ${i}-kubernetes-routes.service root@server:/etc/systemd/system/kubernetes-routes.service
 
-```bash
-ssh root@node-1 <<EOF
-  ip route add ${NODE_0_SUBNET} via ${NODE_0_IP}
-EOF
+    ssh root@${i} systemctl daemon-reload
+    ssh root@${i} systemctl enable --now kubernetes-routes
+  done
+}
 ```
 
 ## Verification 

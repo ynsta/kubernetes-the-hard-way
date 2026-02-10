@@ -183,7 +183,7 @@ curl --cacert ca.crt \
 {
   "major": "1",
   "minor": "32",
-  "gitVersion": "v1.32.3",
+  "gitVersion": "v1.34.3",
   "gitCommit": "32cc146f75aad04beaaa245a7157eb35063a9f99",
   "gitTreeState": "clean",
   "buildDate": "2025-03-11T19:52:21Z",

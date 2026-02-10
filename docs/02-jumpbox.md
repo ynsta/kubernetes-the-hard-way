@@ -28,8 +28,8 @@ Now that you are logged into the `jumpbox` machine as the `root` user, you will 
 Now it's time to download a copy of this tutorial which contains the configuration files and templates that will be used build your Kubernetes cluster from the ground up. Clone the Kubernetes The Hard Way git repository using the `git` command:
 
 ```bash
-git clone --depth 1 \
-  https://github.com/kelseyhightower/kubernetes-the-hard-way.git
+git clone --depth 1 --branch 1.34.3 \
+  https://github.com/ynsta/kubernetes-the-hard-way.git
 ```
 
 Change into the `kubernetes-the-hard-way` directory:

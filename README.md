@@ -40,4 +40,5 @@ This tutorial requires four (4) ARM64 or AMD64 based virtual or physical machine
 * [Configuring kubectl for Remote Access](docs/10-configuring-kubectl.md)
 * [Provisioning Pod Network Routes](docs/11-pod-network-routes.md)
 * [Smoke Test](docs/12-smoke-test.md)
-* [Cleaning Up](docs/13-cleanup.md)
+* [Deploying Cluster Add-ons](docs/13-addons.md)
+* [Cleaning Up](docs/14-cleanup.md)

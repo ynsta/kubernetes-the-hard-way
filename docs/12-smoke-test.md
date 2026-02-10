@@ -100,13 +100,13 @@ curl --head http://127.0.0.1:8080
 
 ```text
 HTTP/1.1 200 OK
-Server: nginx/1.27.4
-Date: Sun, 06 Apr 2025 17:17:12 GMT
+Server: nginx/1.29.5
+Date: Tue, 10 Feb 2026 20:44:53 GMT
 Content-Type: text/html
 Content-Length: 615
-Last-Modified: Wed, 05 Feb 2025 11:06:32 GMT
+Last-Modified: Wed, 04 Feb 2026 15:12:20 GMT
 Connection: keep-alive
-ETag: "67a34638-267"
+ETag: "698361d4-267"
 Accept-Ranges: bytes
 ```
 
@@ -145,7 +145,7 @@ kubectl exec -ti $POD_NAME -- nginx -v
 ```
 
 ```text
-nginx version: nginx/1.27.4
+nginx version: nginx/1.29.5
 ```
 
 ## Services
@@ -179,18 +179,19 @@ NODE_NAME=$(kubectl get pods \
 Make an HTTP request using the IP address and the `nginx` node port:
 
 ```bash
-curl -I http://${NODE_NAME}:${NODE_PORT}
+curl -I "http://${NODE_NAME}:${NODE_PORT}"
 ```
 
 ```text
-Server: nginx/1.27.4
-Date: Sun, 06 Apr 2025 17:18:36 GMT
+HTTP/1.1 200 OK
+Server: nginx/1.29.5
+Date: Tue, 10 Feb 2026 20:46:20 GMT
 Content-Type: text/html
 Content-Length: 615
-Last-Modified: Wed, 05 Feb 2025 11:06:32 GMT
+Last-Modified: Wed, 04 Feb 2026 15:12:20 GMT
 Connection: keep-alive
-ETag: "67a34638-267"
+ETag: "698361d4-267"
 Accept-Ranges: bytes
 ```
 
-Next: [Cleaning Up](13-cleanup.md)
+Next: [Deploying Cluster Add-ons](13-addons.md)

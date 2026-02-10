@@ -120,7 +120,7 @@ Use the `chmod` command to make the `kubectl` binary executable and move it to t
 
 ```bash
 {
-  cp downloads/client/kubectl /usr/local/bin/
+  install -m 755 downloads/client/kubectl /usr/local/bin/
 }
 ```
 
@@ -132,7 +132,7 @@ kubectl version --client
 
 ```text
 Client Version: v1.34.3
-Kustomize Version: v5.5.0
+Kustomize Version: v5.7.1
 ```
 
 At this point the `jumpbox` has been set up with all the command line tools and utilities necessary to complete the labs in this tutorial.

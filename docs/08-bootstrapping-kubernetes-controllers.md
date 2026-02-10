@@ -182,15 +182,19 @@ curl --cacert ca.crt \
 ```text
 {
   "major": "1",
-  "minor": "32",
+  "minor": "34",
+  "emulationMajor": "1",
+  "emulationMinor": "34",
+  "minCompatibilityMajor": "1",
+  "minCompatibilityMinor": "33",
   "gitVersion": "v1.34.3",
-  "gitCommit": "32cc146f75aad04beaaa245a7157eb35063a9f99",
+  "gitCommit": "df11db1c0f08fab3c0baee1e5ce6efbf816af7f1",
   "gitTreeState": "clean",
-  "buildDate": "2025-03-11T19:52:21Z",
-  "goVersion": "go1.23.6",
+  "buildDate": "2025-12-09T14:59:13Z",
+  "goVersion": "go1.24.11",
   "compiler": "gc",
-  "platform": "linux/arm64"
-}
+  "platform": "linux/amd64"
+}%
 ```
 
 Next: [Bootstrapping the Kubernetes Worker Nodes](09-bootstrapping-kubernetes-workers.md)

@@ -72,11 +72,11 @@ Copy and enable services:
 
 ```bash
 {
-  for i in server node-0 node-1; do
-    scp ${i}-kubernetes-routes.service root@server:/etc/systemd/system/kubernetes-routes.service
+  for HOST in server node-0 node-1; do
+    scp ${HOST}-kubernetes-routes.service root@${HOST}:/etc/systemd/system/kubernetes-routes.service
 
-    ssh root@${i} systemctl daemon-reload
-    ssh root@${i} systemctl enable --now kubernetes-routes
+    ssh root@${HOST} systemctl daemon-reload
+    ssh root@${HOST} systemctl enable --now kubernetes-routes
   done
 }
 ```

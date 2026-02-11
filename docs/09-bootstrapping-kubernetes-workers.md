@@ -53,7 +53,7 @@ ssh root@node-0
 
 ## Provisioning a Kubernetes Worker Node
 
-Install the OS dependencies:
+### Install the OS dependencies
 
 ```bash
 {
@@ -64,25 +64,36 @@ Install the OS dependencies:
 
 > The socat binary enables support for the `kubectl port-forward` command.
 
-Disable Swap
+### Swap Configuration
 
-Kubernetes has limited support for the use of swap memory, as it is difficult to provide guarantees and account for pod memory utilization when swap is involved.
+In newer versions of Kubernetes and when using cgroup v2, swap is supported and can be left enabled on nodes. This allows the system to better handle memory pressure by swapping out rarely used memory pages.
 
-Verify if swap is disabled:
+The Kubelet in this lab is configured with `failSwapOn: false`, which allows it to start even if swap is enabled. Additionally, critical services like the Kubelet and the container runtime are protected from being swapped out by setting `MemorySwapMax=0` in their respective systemd unit files.
+
+Verify if swap is enabled:
 
 ```bash
 swapon --show
 ```
 
-If output is empty then swap is disabled. If swap is enabled run the following command to disable swap immediately:
+If swap is enabled, you can leave it as is. Kubernetes will manage memory and swap usage accordingly.
+
+To ensure the system remains stable under memory pressure, configure the following kernel parameters:
 
 ```bash
-swapoff -a
+{
+  cat <<EOF > /etc/sysctl.d/kubernetes.conf
+vm.swappiness = 60
+vm.watermark_scale_factor = 2000
+vm.min_free_kbytes = 500000
+EOF
+  sysctl --system -p
+}
 ```
 
-> To ensure swap remains off after reboot consult your Linux distro documentation.
+> For further information on tuning swap for Kubernetes, refer to the [Tuning Linux Swap for Kubernetes: A Deep Dive](https://kubernetes.io/blog/2025/08/19/tuning-linux-swap-for-kubernetes-a-deep-dive/) blog post.
 
-Create the installation directories:
+### Create the installation directories
 
 ```bash
 mkdir -p \
@@ -94,7 +105,7 @@ mkdir -p \
   /var/run/kubernetes
 ```
 
-Install the worker binaries:
+### Install the worker binaries
 
 ```bash
 {
@@ -124,11 +135,11 @@ To ensure network traffic crossing the CNI `bridge` network is processed by `ipt
 
 ```bash
 {
-  echo "net.bridge.bridge-nf-call-iptables = 1" \
-    >> /etc/sysctl.d/kubernetes.conf
-  echo "net.bridge.bridge-nf-call-ip6tables = 1" \
-    >> /etc/sysctl.d/kubernetes.conf
-  sysctl -p /etc/sysctl.d/kubernetes.conf
+  cat <<EOF >> /etc/sysctl.d/kubernetes.conf
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+EOF
+  sysctl --system -p
 }
 ```
 

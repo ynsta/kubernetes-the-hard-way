@@ -11,6 +11,7 @@ RestartSec=5
 Delegate=yes
 KillMode=process
 OOMScoreAdjust=-999
+MemorySwapMax=0
 LimitNOFILE=1048576
 LimitNPROC=infinity
 LimitCORE=infinity

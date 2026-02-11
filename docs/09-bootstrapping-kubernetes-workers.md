@@ -12,12 +12,12 @@ Copy the Kubernetes binaries and systemd unit files to each worker instance:
 for HOST in node-0 node-1; do
   SUBNET=$(grep ${HOST} machines.txt | cut -d " " -f 4)
   sed "s|SUBNET|$SUBNET|g" \
-    configs/10-bridge.conf > 10-bridge.conf
+    configs/10-bridge.conflist > 10-bridge.conflist
 
   sed "s|SUBNET|$SUBNET|g" \
     configs/kubelet-config.yaml > kubelet-config.yaml
 
-  scp 10-bridge.conf kubelet-config.yaml \
+  scp 10-bridge.conflist kubelet-config.yaml \
   root@${HOST}:~/
 done
 ```
@@ -110,7 +110,7 @@ Install the worker binaries:
 Create the `bridge` network configuration file:
 
 ```bash
-mv 10-bridge.conf 99-loopback.conf /etc/cni/net.d/
+mv 10-bridge.conflist 99-loopback.conf /etc/cni/net.d/
 ```
 
 To ensure network traffic crossing the CNI `bridge` network is processed by `iptables`, load and configure the `br-netfilter` kernel module:

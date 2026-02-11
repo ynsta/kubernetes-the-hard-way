@@ -176,7 +176,7 @@ Make a HTTP request for the Kubernetes version info:
 
 ```bash
 curl --cacert ca.crt \
-  https://server.kubernetes.local:6443/version
+  https://server.kubernetes.internal:6443/version
 ```
 
 ```text

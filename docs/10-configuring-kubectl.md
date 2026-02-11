@@ -8,11 +8,11 @@ In this lab you will generate a kubeconfig file for the `kubectl` command line u
 
 Each kubeconfig requires a Kubernetes API Server to connect to.
 
-You should be able to ping `server.kubernetes.local` based on the `/etc/hosts` DNS entry from a previous lab.
+You should be able to ping `server.kubernetes.internal` based on the `/etc/hosts` DNS entry from a previous lab.
 
 ```bash
 curl --cacert ca.crt \
-  https://server.kubernetes.local:6443/version
+  https://server.kubernetes.internal:6443/version
 ```
 
 ```text
@@ -40,7 +40,7 @@ Generate a kubeconfig file suitable for authenticating as the `admin` user:
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.crt \
     --embed-certs=true \
-    --server=https://server.kubernetes.local:6443
+    --server=https://server.kubernetes.internal:6443
 
   kubectl config set-credentials admin \
     --client-certificate=admin.crt \

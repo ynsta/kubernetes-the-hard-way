@@ -137,7 +137,7 @@ kubectl run -it --rm --restart=Never busybox --image=busybox:1.37 -- nslookup ku
 ```text             
 Server:         10.32.0.10
 Address:        10.32.0.10:53
-Name:   kubernetes.default.svc.cluster.local
+Name:   kubernetes.default.svc.cluster.internal
 Address: 10.32.0.1
 ```
 

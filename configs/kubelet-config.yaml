@@ -3,7 +3,7 @@ apiVersion: kubelet.config.k8s.io/v1beta1
 address: "0.0.0.0"
 clusterDNS:
   - "10.32.0.10"
-clusterDomain: "cluster.local"
+clusterDomain: "cluster.internal"
 authentication:
   anonymous:
     enabled: false

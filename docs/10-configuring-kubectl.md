@@ -66,7 +66,7 @@ kubectl version
 
 ```text
 Client Version: v1.34.3
-Kustomize Version: v5.5.0
+Kustomize Version: v5.7.1
 Server Version: v1.34.3
 ```
 

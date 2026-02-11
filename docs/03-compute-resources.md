@@ -167,7 +167,7 @@ In this section you will append the DNS entries from the `hosts` file to the loc
 Append the DNS entries from `hosts` to `/etc/hosts`:
 
 ```bash
-cat hosts >> /etc/hosts
+cat hosts | sudo tee -a /etc/hosts
 ```
 
 Verify that the `/etc/hosts` file has been updated:

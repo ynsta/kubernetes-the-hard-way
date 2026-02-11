@@ -4,28 +4,30 @@ In this lab you will set up one of the four machines to be a `jumpbox`. This mac
 
 Think of the `jumpbox` as the administration machine that you will use as a home base when setting up your Kubernetes cluster from the ground up. Before we get started we need to install a few command line utilities and clone the Kubernetes The Hard Way git repository, which contains some additional configuration files that will be used to configure various Kubernetes components throughout this tutorial.
 
-Log in to the `jumpbox`:
+Log in to the `jumpbox`. For Vagrant nodes:
 
 ```bash
-ssh root@jumpbox
+vagrant ssh jumpbox
 ```
 
-All commands will be run as the `root` user. This is being done for the sake of convenience, and will help reduce the number of commands required to set everything up.
+Alternatively, use your preferred method to log in to the machine.
+
+All commands will be run as a user with `sudo` capabilities on the `jumpbox`, and as the `root` user on nodes and servers.
 
 ### Install Command Line Utilities
 
-Now that you are logged into the `jumpbox` machine as the `root` user, you will install the command line utilities that will be used to preform various tasks throughout the tutorial.
+Now that you are logged into the `jumpbox` machine as a user with `sudo` privileges, you will install the command line utilities that will be used to perform various tasks throughout the tutorial.
 
 ```bash
 {
-  apt-get update
-  apt-get -y install wget curl vim openssl git
+  sudo apt-get update
+  sudo apt-get -y install wget curl vim openssl git
 }
 ```
 
 ### Sync GitHub Repository
 
-Now it's time to download a copy of this tutorial which contains the configuration files and templates that will be used build your Kubernetes cluster from the ground up. Clone the Kubernetes The Hard Way git repository using the `git` command:
+Now it's time to download a copy of this tutorial which contains the configuration files and templates that will be used to build your Kubernetes cluster from the ground up. Clone the Kubernetes The Hard Way git repository using the `git` command:
 
 ```bash
 git clone --depth 1 --branch 1.34.3 \
@@ -45,8 +47,10 @@ pwd
 ```
 
 ```text
-/root/kubernetes-the-hard-way
+/home/vagrant/kubernetes-the-hard-way
 ```
+
+Or the home directory of your specific user.
 
 ### Download Binaries
 
@@ -114,13 +118,13 @@ Make the binaries executable.
 
 ### Install kubectl
 
-In this section you will install the `kubectl`, the official Kubernetes client command line tool, on the `jumpbox` machine. `kubectl` will be used to interact with the Kubernetes control plane once your cluster is provisioned later in this tutorial.
+In this section you will install `kubectl`, the official Kubernetes client command line tool, on the `jumpbox` machine. `kubectl` will be used to interact with the Kubernetes control plane once your cluster is provisioned later in this tutorial.
 
-Use the `chmod` command to make the `kubectl` binary executable and move it to the `/usr/local/bin/` directory:
+Use the `install` command to make the `kubectl` binary executable and move it to the `/usr/local/bin/` directory:
 
 ```bash
 {
-  install -m 755 downloads/client/kubectl /usr/local/bin/
+  sudo install -m 755 downloads/client/kubectl /usr/local/bin/
 }
 ```
 

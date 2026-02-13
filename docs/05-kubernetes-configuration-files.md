@@ -12,10 +12,10 @@ When generating kubeconfig files for Kubelets the client certificate matching th
 
 > The following commands must be run in the same directory used to generate the SSL certificates during the [Generating TLS Certificates](04-certificate-authority.md) lab.
 
-Generate a kubeconfig file for the `node-0` and `node-1` worker nodes:
+Generate a kubeconfig file for the `node-0`, `node-1` and `node-2` worker nodes:
 
 ```bash
-for host in node-0 node-1; do
+for host in node-0 node-1 node-2; do
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.crt \
     --embed-certs=true \
@@ -43,6 +43,7 @@ Results:
 ```text
 node-0.kubeconfig
 node-1.kubeconfig
+node-2.kubeconfig
 ```
 
 ### The kube-proxy Kubernetes Configuration File
@@ -184,10 +185,10 @@ admin.kubeconfig
 
 ## Distribute the Kubernetes Configuration Files
 
-Copy the `kubelet` and `kube-proxy` kubeconfig files to the `node-0` and `node-1` machines:
+Copy the `kubelet` and `kube-proxy` kubeconfig files to the `node-0`, `node-1` and `node-2` machines:
 
 ```bash
-for host in node-0 node-1; do
+for host in node-0 node-1 node-2; do
   ssh root@${host} "mkdir -p /var/lib/{kube-proxy,kubelet}"
 
   scp kube-proxy.kubeconfig \

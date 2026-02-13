@@ -15,12 +15,9 @@ Get internal IP address and Pod CIDR range for each worker instance and create s
 ```bash
 {
   SERVER_IP=$(grep server machines.txt | cut -d " " -f 1)
-  NODE_0_IP=$(grep node-0 machines.txt | cut -d " " -f 1)
-  NODE_0_SUBNET=$(grep node-0 machines.txt | cut -d " " -f 4)
-  NODE_1_IP=$(grep node-1 machines.txt | cut -d " " -f 1)
-  NODE_1_SUBNET=$(grep node-1 machines.txt | cut -d " " -f 4)
 
-  cat <<EOF | tee server-kubernetes-routes.service
+  for HOST in server node-0 node-1 node-2; do
+    cat <<EOF > ${HOST}-kubernetes-routes.service
 [Unit]
 Description=Kubernetes Pod Network Routes
 After=network-online.target
@@ -28,43 +25,20 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/sbin/ip route replace ${NODE_0_SUBNET} via ${NODE_0_IP}
-ExecStart=/sbin/ip route replace ${NODE_1_SUBNET} via ${NODE_1_IP}
+EOF
+    while read IP FQDN OTHER_HOST SUBNET; do
+      if [ "$HOST" != "$OTHER_HOST" ]; then
+        echo "ExecStart=/sbin/ip route replace ${SUBNET} via ${IP}" >> ${HOST}-kubernetes-routes.service
+      fi
+    done < <(grep node machines.txt)
+
+    cat <<EOF >> ${HOST}-kubernetes-routes.service
 RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
 EOF
-
-  cat <<EOF | tee node-0-kubernetes-routes.service
-[Unit]
-Description=Kubernetes Pod Network Routes
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=oneshot
-ExecStart=/sbin/ip route replace ${NODE_1_SUBNET} via ${NODE_1_IP}
-RemainAfterExit=yes
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-  cat <<EOF | tee node-1-kubernetes-routes.service
-[Unit]
-Description=Kubernetes Pod Network Routes
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=oneshot
-ExecStart=/sbin/ip route replace ${NODE_0_SUBNET} via ${NODE_0_IP}
-RemainAfterExit=yes
-
-[Install]
-WantedBy=multi-user.target
-EOF
+  done
 }
 ```
 
@@ -72,7 +46,7 @@ Copy and enable services:
 
 ```bash
 {
-  for HOST in server node-0 node-1; do
+  for HOST in server node-0 node-1 node-2; do
     scp ${HOST}-kubernetes-routes.service root@${HOST}:/etc/systemd/system/kubernetes-routes.service
 
     ssh root@${HOST} systemctl daemon-reload
@@ -81,17 +55,18 @@ Copy and enable services:
 }
 ```
 
-## Verification 
+## Verification
 
 ```bash
 ssh root@server ip route
 ```
 
 ```text
-default via XXX.XXX.XXX.XXX dev ens160 
-10.200.0.0/24 via XXX.XXX.XXX.XXX dev ens160 
-10.200.1.0/24 via XXX.XXX.XXX.XXX dev ens160 
-XXX.XXX.XXX.0/24 dev ens160 proto kernel scope link src XXX.XXX.XXX.XXX 
+...
+10.5.20.0/24 via XXX.XXX.XXX.XXX dev ens6
+10.5.21.0/24 via XXX.XXX.XXX.XXX dev ens6
+10.5.22.0/24 via XXX.XXX.XXX.XXX dev ens6
+...
 ```
 
 ```bash
@@ -99,9 +74,10 @@ ssh root@node-0 ip route
 ```
 
 ```text
-default via XXX.XXX.XXX.XXX dev ens160 
-10.200.1.0/24 via XXX.XXX.XXX.XXX dev ens160 
-XXX.XXX.XXX.0/24 dev ens160 proto kernel scope link src XXX.XXX.XXX.XXX 
+...
+10.5.21.0/24 via XXX.XXX.XXX.XXX dev ens7
+10.5.22.0/24 via XXX.XXX.XXX.XXX dev ens7
+...
 ```
 
 ```bash
@@ -109,9 +85,21 @@ ssh root@node-1 ip route
 ```
 
 ```text
-default via XXX.XXX.XXX.XXX dev ens160 
-10.200.0.0/24 via XXX.XXX.XXX.XXX dev ens160 
-XXX.XXX.XXX.0/24 dev ens160 proto kernel scope link src XXX.XXX.XXX.XXX 
+...
+10.5.20.0/24 via XXX.XXX.XXX.XXX dev ens7
+10.5.22.0/24 via XXX.XXX.XXX.XXX dev ens7
+...
+```
+
+```bash
+ssh root@node-2 ip route
+```
+
+```text
+...
+10.5.20.0/24 via XXX.XXX.XXX.XXX dev ens7
+10.5.21.0/24 via XXX.XXX.XXX.XXX dev ens7
+...
 ```
 
 

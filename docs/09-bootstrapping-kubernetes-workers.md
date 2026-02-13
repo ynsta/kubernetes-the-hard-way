@@ -1,6 +1,6 @@
 # Bootstrapping the Kubernetes Worker Nodes
 
-In this lab you will bootstrap two Kubernetes worker nodes. The following components will be installed: [runc](https://github.com/opencontainers/runc), [container networking plugins](https://github.com/containernetworking/cni), [containerd](https://github.com/containerd/containerd), [kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
+In this lab you will bootstrap three Kubernetes worker nodes. The following components will be installed: [runc](https://github.com/opencontainers/runc), [container networking plugins](https://github.com/containernetworking/cni), [containerd](https://github.com/containerd/containerd), [kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
 
 ## Prerequisites
 
@@ -9,7 +9,7 @@ The commands in this section must be run from the `jumpbox`.
 Copy the Kubernetes binaries and systemd unit files to each worker instance:
 
 ```bash
-for HOST in node-0 node-1; do
+for HOST in node-0 node-1 node-2; do
   SUBNET=$(grep ${HOST} machines.txt | cut -d " " -f 4)
   sed "s|SUBNET|$SUBNET|g" \
     configs/10-bridge.conflist > 10-bridge.conflist
@@ -23,7 +23,7 @@ done
 ```
 
 ```bash
-for HOST in node-0 node-1; do
+for HOST in node-0 node-1 node-2; do
   scp \
     downloads/worker/* \
     downloads/client/kubectl \
@@ -38,14 +38,14 @@ done
 ```
 
 ```bash
-for HOST in node-0 node-1; do
+for HOST in node-0 node-1 node-2; do
   scp \
     downloads/cni-plugins/* \
     root@${HOST}:~/cni-plugins/
 done
 ```
 
-The commands in the next section must be run on each worker instance: `node-0`, `node-1`. Login to the worker instance using the `ssh` command. Example:
+The commands in the next section must be run on each worker instance: `node-0`, `node-1` and `node-2`. Login to the worker instance using the `ssh` command. Example:
 
 ```bash
 ssh root@node-0
@@ -109,10 +109,10 @@ mkdir -p \
 
 ```bash
 {
-  mv crictl kube-proxy kubelet runc \
+  mv -v crictl kube-proxy kubelet runc \
     /usr/local/bin/
-  mv containerd containerd-shim-runc-v2 containerd-stress /bin/
-  mv cni-plugins/* /opt/cni/bin/
+  mv -v containerd containerd-shim-runc-v2 containerd-stress /bin/
+  mv -v cni-plugins/* /opt/cni/bin/
 }
 ```
 
@@ -121,7 +121,7 @@ mkdir -p \
 Create the `bridge` network configuration file:
 
 ```bash
-mv 10-bridge.conflist 99-loopback.conf /etc/cni/net.d/
+mv -v 10-bridge.conflist 99-loopback.conf /etc/cni/net.d/
 ```
 
 To ensure network traffic crossing the CNI `bridge` network is processed by `iptables`, load and configure the `br-netfilter` kernel module:
@@ -150,8 +150,8 @@ Install the `containerd` configuration files:
 ```bash
 {
   mkdir -p /etc/containerd/
-  mv containerd-config.toml /etc/containerd/config.toml
-  mv containerd.service /etc/systemd/system/
+  mv -v containerd-config.toml /etc/containerd/config.toml
+  mv -v containerd.service /etc/systemd/system/
 }
 ```
 
@@ -161,8 +161,8 @@ Create the `kubelet-config.yaml` configuration file:
 
 ```bash
 {
-  mv kubelet-config.yaml /var/lib/kubelet/
-  mv kubelet.service /etc/systemd/system/
+  mv -v kubelet-config.yaml /var/lib/kubelet/
+  mv -v kubelet.service /etc/systemd/system/
 }
 ```
 
@@ -170,8 +170,8 @@ Create the `kubelet-config.yaml` configuration file:
 
 ```bash
 {
-  mv kube-proxy-config.yaml /var/lib/kube-proxy/
-  mv kube-proxy.service /etc/systemd/system/
+  mv -v kube-proxy-config.yaml /var/lib/kube-proxy/
+  mv -v kube-proxy.service /etc/systemd/system/
 }
 ```
 
@@ -195,7 +195,7 @@ systemctl is-active kubelet
 active
 ```
 
-Be sure to complete the steps in this section on each worker node, `node-0` and `node-1`, before moving on to the next section.
+Be sure to complete the steps in this section on each worker node, `node-0`, `node-1` and `node-2`, before moving on to the next section.
 
 ## Verification
 
@@ -211,8 +211,9 @@ ssh root@server \
 
 ```
 NAME     STATUS   ROLES    AGE    VERSION
-node-0   Ready    <none>   1m     v1.34.3
-node-1   Ready    <none>   10s    v1.34.3
+node-0   Ready    <none>   2m     v1.34.3
+node-1   Ready    <none>   1m     v1.34.3
+node-2   Ready    <none>   10s    v1.34.3
 ```
 
 Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)

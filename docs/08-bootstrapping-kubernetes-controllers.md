@@ -40,7 +40,7 @@ Install the Kubernetes binaries:
 
 ```bash
 {
-  mv kube-apiserver \
+  mv -v kube-apiserver \
     kube-controller-manager \
     kube-scheduler kubectl \
     /usr/local/bin/
@@ -53,7 +53,7 @@ Install the Kubernetes binaries:
 {
   mkdir -p /var/lib/kubernetes/
 
-  mv ca.crt ca.key \
+  mv -v ca.crt ca.key \
     kube-api-server.key kube-api-server.crt \
     service-accounts.key service-accounts.crt \
     encryption-config.yaml \
@@ -64,7 +64,7 @@ Install the Kubernetes binaries:
 Create the `kube-apiserver.service` systemd unit file:
 
 ```bash
-mv kube-apiserver.service \
+mv -v kube-apiserver.service \
   /etc/systemd/system/kube-apiserver.service
 ```
 
@@ -73,13 +73,13 @@ mv kube-apiserver.service \
 Move the `kube-controller-manager` kubeconfig into place:
 
 ```bash
-mv kube-controller-manager.kubeconfig /var/lib/kubernetes/
+mv -v kube-controller-manager.kubeconfig /var/lib/kubernetes/
 ```
 
 Create the `kube-controller-manager.service` systemd unit file:
 
 ```bash
-mv kube-controller-manager.service /etc/systemd/system/
+mv -v kube-controller-manager.service /etc/systemd/system/
 ```
 
 ### Configure the Kubernetes Scheduler
@@ -87,19 +87,19 @@ mv kube-controller-manager.service /etc/systemd/system/
 Move the `kube-scheduler` kubeconfig into place:
 
 ```bash
-mv kube-scheduler.kubeconfig /var/lib/kubernetes/
+mv -v kube-scheduler.kubeconfig /var/lib/kubernetes/
 ```
 
 Create the `kube-scheduler.yaml` configuration file:
 
 ```bash
-mv kube-scheduler.yaml /etc/kubernetes/config/
+mv -v kube-scheduler.yaml /etc/kubernetes/config/
 ```
 
 Create the `kube-scheduler.service` systemd unit file:
 
 ```bash
-mv kube-scheduler.service /etc/systemd/system/
+mv -v kube-scheduler.service /etc/systemd/system/
 ```
 
 ### Start the Controller Services
